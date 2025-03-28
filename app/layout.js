@@ -1,11 +1,12 @@
 import { Heebo } from "next/font/google";
 import "./globals.css";
+import Header from "@/components/Header";
 
 const heebo = Heebo({
   subsets: ["latin"],
   variable: "--font-heebo",
   // Optional: Add weights/styles you need
-  weight: ["400", "500", "700"],
+  weight: ["300","400", "500", "700"],
 });
 
 export const metadata = {
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${heebo.variable} font-sans antialiased`}>
+      <Header />
         {children}
       </body>
     </html>

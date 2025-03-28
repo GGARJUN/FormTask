@@ -1,2 +1,167 @@
 @import "tailwindcss";
 
+.heebo_800_58_41 {
+    font-family: 'Heebo', sans-serif;
+    font-style: normal;
+    font-weight: 800;
+    font-size: clamp(28px, 4vw, 58px);
+    line-height: clamp(32px, 3vw, 41px);
+
+  }
+
+  .heebo_300_58_41 {
+    font-family: 'Heebo', sans-serif;
+    font-style: normal;
+    font-weight: 300;
+    font-size: clamp(28px, 4vw, 58px);
+    line-height: clamp(32px, 3vw, 41px);
+
+  }
+
+.heebo_500_35_38 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(35px, 2vw, 35px);
+  line-height: clamp(38px, 3vw, 38px);
+}
+
+.heebo_400_20_29 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(20px, 1vw, 20px);
+  line-height: clamp(29px, 2vw, 29px);
+}
+
+.heebo_400_45_32 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(29px, 3vw, 45px);
+  line-height: clamp(20px, 2vw, 32px);
+}
+
+.heebo_400_20_14 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(12px, 1vw, 20px);
+  line-height: clamp(8px, 0.9vw, 14px);
+}
+
+.heebo_500_35_25 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(20px, 2vw, 35px);
+  line-height: clamp(12px, 2vw, 25px);
+}
+
+.heebo_500_25_25 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(18px, 1.7vw, 25px);
+  line-height: clamp(10px, 1.7vw, 25px);
+}
+
+.heebo_400_20_14 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(20px, 1.7vw, 20px);
+  line-height: clamp(24px, 1.7vw, 14px);
+}
+
+.heebo_500_45_32 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(24px, 3vw, 45px);
+  line-height: clamp(20px, 2vw, 32px);
+}
+
+.heebo_700_20_14 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: clamp(12px, 1vw, 20px);
+  line-height: clamp(8px, 0.9vw, 14px);
+}
+
+.heebo_500_20_38 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(20px, 2vw, 20px);
+  line-height: clamp(38px, 3vw, 38px);
+}
+
+.heebo_700_20_29 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: clamp(20px, 1vw, 20px);
+  line-height: clamp(29px, 2vw, 29px);
+}
+
+.heebo_400_18_29 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(18px, 1.7vw, 18px);
+  line-height: clamp(29px, 1.7vw, 29px);
+}
+
+.heebo_400_20_40 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(20px, 1.7vw, 20px);
+  line-height: clamp(32px, 1.7vw, 40px);
+}
+
+.heebo_500_20_29 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(20px, 1vw, 20px);
+  line-height: clamp(29px, 2vw, 29px);
+}
+
+.heebo_400_16_11 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(11px, 1.7vw, 16px);
+  line-height: clamp(11px, 1.7vw, 11px);
+}
+
+.heebo_400_45_54 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(29px, 3vw, 45px);
+  line-height: clamp(32px, 2vw, 55px);
+}
+
+.heebo_400_15_28 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(15px, 1.7vw, 15px);
+  line-height: clamp(28px, 1.7vw, 28px);
+}
+
+.heebo_500_45_98 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(26px, 3vw, 45px);
+  line-height: clamp(40px, 7vw, 60px);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+}

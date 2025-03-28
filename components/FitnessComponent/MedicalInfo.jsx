@@ -30,41 +30,41 @@ const MedicalInfo = ({ onFormDataChange }) => {
     };
 
     return (
-        <div className="bg-white py-8 md:py-16 px-4 sm:px-6 md:px-20 lg:px-40">
-            <div className="max-w-6xl mx-auto">
+        <div className="bg-white py-8 md:py-16 ">
+            <div className="max-w-[1099px] w-[76%] mx-auto">
                 {/* Title */}
-                <h2 className="text-[#4E008E] text-2xl sm:text-3xl md:text-4xl font-medium uppercase text-start">
+                <h2 className="text-[#4E008E] heebo_500_45_32 uppercase ">
                     Medical Information
                 </h2>
 
                 {/* Form Content */}
                 <div className="mt-6 sm:mt-8 md:mt-10">
                     {/* Question */}
-                    <p className="text-black text-sm sm:text-base md:text-lg font-normal">
+                    <p className="text-black heebo_400_20_14">
                         Does the participant have any medical conditions, allergies, or dietary restrictions we should be aware of?
                     </p>
 
                     {/* YES/NO Checkboxes */}
-                    <div className="flex gap-4 sm:gap-6 mt-4 sm:mt-6">
-                        <label className="flex items-center gap-2">
+                    <div className="flex gap-[20px] mt-4 sm:mt-6">
+                        <label className="flex items-center gap-[11px]">
                             <input
                                 type="checkbox"
                                 checked={formData.hasMedicalCondition}
                                 onChange={() => handleCheckboxChange(true)}
-                                className="w-5 h-5 sm:w-6 sm:h-6"
+                                className="w-[18px] h-[18px] "
                             />
-                            <span className="text-black text-sm sm:text-base md:text-lg font-normal">
+                            <span className="text-black heebo_400_18_29">
                                 YES
                             </span>
                         </label>
-                        <label className="flex items-center gap-2">
+                        <label className="flex items-center gap-[11px]">
                             <input
                                 type="checkbox"
                                 checked={!formData.hasMedicalCondition}
                                 onChange={() => handleCheckboxChange(false)}
-                                className="w-5 h-5 sm:w-6 sm:h-6"
+                                className="w-[18px] h-[18px] "
                             />
-                            <span className="text-black text-sm sm:text-base md:text-lg font-normal">
+                            <span className="text-black heebo_400_18_29">
                                 NO
                             </span>
                         </label>
@@ -73,15 +73,17 @@ const MedicalInfo = ({ onFormDataChange }) => {
                     {/* Details Text Area (Visible if YES is selected) */}
                     {formData.hasMedicalCondition && (
                         <>
-                            <p className="text-black text-sm sm:text-base md:text-lg font-normal mt-4 sm:mt-6">
-                                If yes, please provide details
-                            </p>
-                            <textarea
-                                value={formData.medicalDetails}
-                                onChange={handleDetailsChange}
-                                placeholder="Enter details here..."
-                                className="w-full h-20 mt-2 sm:mt-4 border-b text-gray-500 text-sm sm:text-base md:text-lg font-normal p-3 sm:p-4 resize-none"
-                            />
+                            <div className="h-[79px] mt-4 sm:mt-14">
+                                <p className="text-black heebo_400_20_14 ">
+                                    If yes, please provide details
+                                </p>
+                                <textarea
+                                    value={formData.medicalDetails}
+                                    onChange={handleDetailsChange}
+                                    // placeholder="Enter details here..."
+                                    className="w-full  border-b text-gray-500 heebo_400_20_14 p-3 sm:p-4 resize-none"
+                                />
+                            </div>
                         </>
                     )}
                 </div>
