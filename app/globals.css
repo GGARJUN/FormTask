@@ -1,29 +1,29 @@
 @import "tailwindcss";
 
 .heebo_800_58_41 {
-    font-family: 'Heebo', sans-serif;
-    font-style: normal;
-    font-weight: 800;
-    font-size: clamp(28px, 4vw, 58px);
-    line-height: clamp(32px, 3vw, 41px);
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 800;
+  font-size: clamp(28px, 4vw, 58px);
+  line-height: clamp(32px, 3vw, 41px);
 
-  }
+}
 
-  .heebo_300_58_41 {
-    font-family: 'Heebo', sans-serif;
-    font-style: normal;
-    font-weight: 300;
-    font-size: clamp(28px, 4vw, 58px);
-    line-height: clamp(32px, 3vw, 41px);
+.heebo_300_58_41 {
+  font-family: 'Heebo', sans-serif;
+  font-style: normal;
+  font-weight: 300;
+  font-size: clamp(28px, 4vw, 58px);
+  line-height: clamp(32px, 3vw, 41px);
 
-  }
+}
 
 .heebo_500_35_38 {
   font-family: 'Heebo', sans-serif;
   font-style: normal;
   font-weight: 500;
   font-size: clamp(35px, 2vw, 35px);
-  line-height: clamp(38px, 3vw, 38px);
+  line-height: clamp(36px, 2vw, 36px);
 }
 
 .heebo_400_20_29 {
@@ -31,7 +31,7 @@
   font-style: normal;
   font-weight: 400;
   font-size: clamp(20px, 1vw, 20px);
-  line-height: clamp(29px, 2vw, 29px);
+  line-height: clamp(24px, 1vw, 24px);
 }
 
 .heebo_400_45_32 {
@@ -164,4 +164,29 @@
 
 input[type="date"]::-webkit-calendar-picker-indicator {
   display: none;
+}
+
+
+.img_bg {
+  color: transparent;
+  width: calc(50% + 2.3vw);
+  height: 24vw;
+}
+
+.fee_gradient {
+  background: linear-gradient(90deg, #161616, #4e008e);
+}
+
+.imgstyle {
+  color: transparent;
+  width: calc(100% - 2vw);
+  height: auto;
+}
+
+
+
+input[type=checkbox].declaration {
+  border: 1px solid #b6e82a;
+  accent-color: #b6e82a ;
+  background-color: #161616 ;
 }

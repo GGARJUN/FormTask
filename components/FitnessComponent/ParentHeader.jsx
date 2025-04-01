@@ -2,26 +2,28 @@ import React from 'react'
 
 const ParentHeader = () => {
     return (
-        <div className='bg-[#161616]'>
-            <div className='flex flex-col md:flex-row justify-center items-center '>
-                <div className="relative  max-w-[1099px]   w-full md:w-[48%] ">
-                    <div style={{ backgroundImage: `url(/180.webp)` }} className="bg-cover bg-center h-[97px] flex  justify-center items-center">
-                        <h2 className='text-[#B6E82A] heebo_400_45_32  text-center'>
-                            PARTICIPANT DETAILS
-                        </h2>
+        <section className='bg-[#161616] hidden xl:block'>
+            <div className="relative w-full flex flex-col md:flex-row justify-between fee_gradient gap-[30px] h-[200px] md:h-auto">
+                <div className="relative md:w-2/4 hidden md:flex items-center justify-center md:h-auto">
+                    <img src="/180.webp" alt="img" className='mr-auto imgstyle'/>
+                </div>
+                <div className="flex flex-col-reverse md:flex-row justify-between w-[90%] lg:w-[76%] max-w-[1099px] absolute top-2/4 left-2/4 translate-x-[-50%] translate-y-[-50%] gap-y-[20px]">
+                    <div className='md:mr-[55px]'>
+                        <p className='text-[#B6E82A] heebo_400_45_32 text-center uppercase'>PARTICIPANT DETAILS</p>
+                    </div>
+                    <div className='flex flex-col 2xl:flex-row items-center md:ml-[22px]'>
+                        <span className='text-white pr-2 2xl:border-r heebo_400_20_14'>Fee - 4999</span>
+                        <div className='flex items-end'>
+                            <span className='text-[#B6E82A] heebo_500_35_25 whitespace-pre'> Early bird offer price -</span>
+                            <span className='heebo_500_25_25 text-[#B6E82A] flex'>₹</span>
+                            <span className='text-[#B6E82A] heebo_500_35_25'>3,999</span>
+                        </div>
+
                     </div>
                 </div>
-                <div className="relative max-w-[1099px]   w-full md:w-[52%]">
-                    <div style={{ backgroundImage: `url(/184.webp)` }} className="bg-cover bg-center  h-[97px] flex flex-col md:flex-row  justify-center items-center gap-5 md:gap-10 ">
-                        <p className='text-white heebo_400_20_14'>Fee - 4999</p>
-                        <div className='h-5 sm:h-7 border border-white w-0 md:block hidden'></div>
-                        <h2 className='text-[#B6E82A] heebo_500_35_25 '>
-                            Early bird offer price - <span className="heebo_500_25_25">₹</span>3,999
-                        </h2>
-                    </div>
-                </div>
+
             </div>
-        </div>
+        </section>
     )
 }
 
