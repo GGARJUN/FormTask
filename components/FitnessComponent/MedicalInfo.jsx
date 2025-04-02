@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 const MedicalInfo = ({ onFormDataChange, errors = {}, resetForm = false }) => {
     const [formData, setFormData] = useState({
-        hasMedicalCondition: false,
+        hasMedicalCondition: null, // Changed to null for no default selection
         medicalDetails: "",
     });
 
@@ -17,7 +17,7 @@ const MedicalInfo = ({ onFormDataChange, errors = {}, resetForm = false }) => {
     useEffect(() => {
         if (resetForm) {
             setFormData({
-                hasMedicalCondition: false,
+                hasMedicalCondition: null, // Reset to null
                 medicalDetails: "",
             });
             setLocalErrors({});
@@ -28,8 +28,8 @@ const MedicalInfo = ({ onFormDataChange, errors = {}, resetForm = false }) => {
     // Validation function for medicalDetails
     const validateMedicalDetails = (hasCondition, details) => {
         const errors = {};
-        if (hasCondition && !details) errors.medicalDetails = "Details are required";
-        else if (hasCondition && details.length < 10) errors.medicalDetails = "Must be at least 10 characters";
+        if (hasCondition === true && !details) errors.medicalDetails = "Details are required";
+        else if (hasCondition === true && details.length < 10) errors.medicalDetails = "Must be at least 10 characters";
         return errors;
     };
 
@@ -37,7 +37,7 @@ const MedicalInfo = ({ onFormDataChange, errors = {}, resetForm = false }) => {
         setFormData((prev) => ({
             ...prev,
             hasMedicalCondition: value,
-            medicalDetails: value ? prev.medicalDetails : "",
+            medicalDetails: value === true ? prev.medicalDetails : "", // Clear details if not "YES"
         }));
 
         const fieldErrors = validateMedicalDetails(value, formData.medicalDetails);
@@ -80,12 +80,12 @@ const MedicalInfo = ({ onFormDataChange, errors = {}, resetForm = false }) => {
                         <label className="flex items-center gap-[11px] cursor-pointer">
                             <input
                                 type="checkbox"
-                                checked={formData.hasMedicalCondition}
+                                checked={formData.hasMedicalCondition === true}
                                 onChange={() => handleCheckboxChange(true)}
                                 className="opacity-0 absolute w-[18px] h-[18px] decoration"
                             />
                             <span className="w-[18px] h-[18px] border border-[#B6E82A] flex items-center justify-center">
-                                {formData.hasMedicalCondition && (
+                                {formData.hasMedicalCondition === true && (
                                     <svg className="w-[18px] h-[18px] bg-[#B6E82A] text-[#4E008E]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                                     </svg>
@@ -96,12 +96,12 @@ const MedicalInfo = ({ onFormDataChange, errors = {}, resetForm = false }) => {
                         <label className="flex items-center gap-[11px] cursor-pointer">
                             <input
                                 type="checkbox"
-                                checked={!formData.hasMedicalCondition}
+                                checked={formData.hasMedicalCondition === false}
                                 onChange={() => handleCheckboxChange(false)}
                                 className="opacity-0 absolute w-[18px] h-[18px] decoration"
                             />
                             <span className="w-[18px] h-[18px] border border-[#B6E82A] flex items-center justify-center">
-                                {!formData.hasMedicalCondition && (
+                                {formData.hasMedicalCondition === false && (
                                     <svg className="w-[18px] h-[18px] bg-[#B6E82A] text-[#4E008E]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                                     </svg>
@@ -116,7 +116,7 @@ const MedicalInfo = ({ onFormDataChange, errors = {}, resetForm = false }) => {
                             value={formData.medicalDetails}
                             onChange={handleDetailsChange}
                             className="w-full border-0 border-b text-gray-500 heebo_400_20_14 resize-none mt-6 focus:outline-none"
-                            disabled={!formData.hasMedicalCondition}
+                            disabled={formData.hasMedicalCondition !== true} // Only enabled when YES is selected
                         />
                         {displayedErrors.medicalDetails && (
                             <p className="text-red-500 text-md">{displayedErrors.medicalDetails}</p>

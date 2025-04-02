@@ -13,6 +13,7 @@ const Fitness = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [hasSubmitted, setHasSubmitted] = useState(false);
     const [resetForm, setResetForm] = useState(false);
+    const [showErrors, setShowErrors] = useState(false); // New state to control error visibility
 
     const [participantFormData, setParticipantFormData] = useState({
         name: "",
@@ -48,7 +49,21 @@ const Fitness = () => {
     const [parentErrors, setParentErrors] = useState({});
     const [locationErrors, setLocationErrors] = useState({});
     const [medicalErrors, setMedicalErrors] = useState({});
-    const [formErrors, setFormErrors] = useState([]);
+
+    const [formErrors, setFormErrors] = useState([
+        "Enter the participant's name",
+        "Enter the participant's date of birth",
+        "Select the participant's age",
+        "Enter the participant's address",
+        "Enter the participant's city",
+        "Enter the participant's state",
+        "Enter the participant's zip code",
+        "Enter the parent's name",
+        "Enter the parent's email",
+        "Enter the parent's phone number",
+        "Select the parent's relationship",
+        "Select a preferred timing for the location",
+    ]);
 
     const participantFormRef = useRef(null);
     const parentFormRef = useRef(null);
@@ -219,20 +234,14 @@ const Fitness = () => {
 
     const handleCheckboxChange = () => {
         setFormData((prev) => ({ ...prev, agreed: !prev.agreed }));
-        setFormErrors([]);
+        // Do not clear formErrors here to preserve them until submission
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setFormErrors([]);
         setIsSubmitting(true);
         setHasSubmitted(true);
-
-        if (!formData.agreed) {
-            setFormErrors(["You must accept the terms and conditions"]);
-            setIsSubmitting(false);
-            return;
-        }
+        setShowErrors(true); // Show errors after submit is clicked
 
         const participantValidation = validateParticipantForm();
         const parentValidation = validateParentForm();
@@ -245,14 +254,16 @@ const Fitness = () => {
         setMedicalErrors(medicalValidation.errors);
 
         const allDetailedErrors = [
+            ...(!formData.agreed ? ["You must accept the terms and conditions"] : []),
             ...participantValidation.detailedErrors,
             ...parentValidation.detailedErrors,
             ...locationValidation.detailedErrors,
             ...medicalValidation.detailedErrors,
         ];
 
+        setFormErrors(allDetailedErrors);
+
         if (allDetailedErrors.length > 0) {
-            setFormErrors(allDetailedErrors);
             setIsSubmitting(false);
             return;
         }
@@ -267,7 +278,7 @@ const Fitness = () => {
 
         setTimeout(() => {
             console.log("Fitness All Form Data:", JSON.stringify(allData, null, 2));
-            
+
             // Reset all form data to initial states
             setParticipantFormData({
                 name: "",
@@ -302,12 +313,13 @@ const Fitness = () => {
             setParentErrors({});
             setLocationErrors({});
             setMedicalErrors({});
-            setFormErrors([]);
+            setFormErrors([]); // Clear errors after successful submission
             setHasSubmitted(false);
+            setShowErrors(false); // Hide errors after reset
 
             // Trigger reset in child components
             setResetForm(true);
-            setTimeout(() => setResetForm(false), 100); // Increased delay to ensure reset propagates
+            setTimeout(() => setResetForm(false), 100);
             setIsSubmitting(false);
         }, 2000);
     };
@@ -328,8 +340,8 @@ const Fitness = () => {
             <div ref={medicalFormRef}>
                 <MedicalInfo onFormDataChange={handleMedicalFormDataChange} errors={hasSubmitted ? medicalErrors : {}} resetForm={resetForm} />
             </div>
-            <div className="bg-[#161616] py-8 md:pt-24">
-                <div className="max-w-[1099px] w-[76%] mx-auto md:h-[712px]">
+            <div className="bg-[#161616] py-8 md:py-24">
+                <div className="max-w-[1099px] w-[76%] mx-auto ">
                     <h2 className="text-[#B6E82A] heebo_500_45_32 uppercase text-center">Declaration Form</h2>
                     <form onSubmit={handleSubmit} className="mt-6 sm:mt-8 md:mt-20">
                         <ul className="list-disc pl-5 space-y-2 sm:space-y-5 text-white heebo_400_20_40">
@@ -357,20 +369,19 @@ const Fitness = () => {
                             </label>
                             <span className="text-white heebo_500_20_29">I have read and understood the above terms and hereby agree to abide by them.</span>
                         </div>
-                        {formErrors.length > 0 && (
-                            <div className="mt-2">
-                                {!formData.agreed ? (
-                                    <p className="text-red-500 text-md">
-                                        You must accept the terms and conditions
-                                    </p>
-                                ) : (
-                                    <p className="text-red-500 text-md">
-                                        <span className="font-bold">Please fix: </span>
-                                        {formErrors.join(", ")}
+                        {showErrors && (formErrors.length > 0 || !formData.agreed) ? (
+                            <div className="mt-2 text-red-500 text-md">
+                                {!formData.agreed && (
+                                    <p>You must accept the terms and conditions</p>
+                                )}
+                                {formErrors.length > 0 && (
+                                    <p className="mt-5">
+                                        <span className="font-bold">Missing fields: </span>
+                                        {formErrors.join("; ")}
                                     </p>
                                 )}
                             </div>
-                        )}
+                        ) : null}
                         <div className="w-full flex justify-start mt-8 sm:mt-10 md:mt-20">
                             <button
                                 type="submit"
