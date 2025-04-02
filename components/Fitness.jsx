@@ -4,14 +4,14 @@ import ParticipantForm from './FitnessComponent/ParticipantForm';
 import ParentDetails from './FitnessComponent/ParentDetails';
 import MedicalInfo from './FitnessComponent/MedicalInfo';
 import Banner from './FitnessComponent/Banner';
-import SelectLocation from "./FitnessComponent/SelectLocaltion";
 import ParentHeader from "./FitnessComponent/ParentHeader";
 import Footer from "./FitnessComponent/Footer";
+import SelectLocation from "./FitnessComponent/SelectLocation"; // Fixed typo
 
 const Fitness = () => {
-    const [formData, setFormData] = useState({
-        agreed: false,
-    });
+    const [formData, setFormData] = useState({ agreed: false });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [hasSubmitted, setHasSubmitted] = useState(false);
 
     const [participantFormData, setParticipantFormData] = useState({
         name: "",
@@ -43,279 +43,194 @@ const Fitness = () => {
         medicalDetails: "",
     });
 
-    const [participantErrors, setParticipantErrors] = useState({
-        name: "",
-        dateOfBirth: "",
-        age: "",
-        gender: "",
-        address: "",
-        city: "",
-        state: "",
-        zipCode: "",
-        tshirtSize: "",
-    });
-
-    const [parentErrors, setParentErrors] = useState({
-        name: "",
-        email: "",
-        phoneNumber: "",
-        relationship: "",
-    });
-
-    const [locationErrors, setLocationErrors] = useState({
-        batch: "",
-        location: "",
-        timing: "",
-    });
-
-    const [medicalErrors, setMedicalErrors] = useState({
-        medicalDetails: "",
-    });
-
-    const [formErrors, setFormErrors] = useState([]); // To store all missing fields for display
+    const [participantErrors, setParticipantErrors] = useState({});
+    const [parentErrors, setParentErrors] = useState({});
+    const [locationErrors, setLocationErrors] = useState({});
+    const [medicalErrors, setMedicalErrors] = useState({});
+    const [formErrors, setFormErrors] = useState([]); // Now stores detailed error messages
 
     const participantFormRef = useRef(null);
     const parentFormRef = useRef(null);
     const locationFormRef = useRef(null);
     const medicalFormRef = useRef(null);
 
+    // Validation Functions with detailed error messages
     const validateParticipantForm = () => {
         const errors = {};
-        const missingFields = [];
-        let hasErrors = false;
+        const detailedErrors = [];
 
-        // Name: Must be alphabets and spaces only, not empty
         if (!participantFormData.name) {
-            errors.name = "Enter a valid name (only alphabets allowed)";
-            missingFields.push("Participant Name");
-            hasErrors = true;
+            errors.name = "Name is required";
+            detailedErrors.push("Enter the participant's name");
         } else if (!/^[a-zA-Z\s]+$/.test(participantFormData.name)) {
-            errors.name = "Enter a valid name (only alphabets allowed)";
-            hasErrors = true;
+            errors.name = "Only alphabets and spaces allowed";
+            detailedErrors.push("Correct the participant's name to use only alphabets and spaces");
         }
 
-        // Date of Birth: Must be a valid date, participant must be between 10 and 20 years old
         if (!participantFormData.dateOfBirth) {
-            errors.dateOfBirth = "This field cannot be empty";
-            missingFields.push("Participant Date of Birth");
-            hasErrors = true;
+            errors.dateOfBirth = "Date of Birth is required";
+            detailedErrors.push("Enter the participant's date of birth");
         } else {
             const dob = new Date(participantFormData.dateOfBirth);
-            const today = new Date();
-            const age = today.getFullYear() - dob.getFullYear();
-            const monthDiff = today.getMonth() - dob.getMonth();
-            const dayDiff = today.getDate() - dob.getDate();
-            const adjustedAge = monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
-
             if (isNaN(dob.getTime())) {
-                errors.dateOfBirth = "Enter a valid date";
-                hasErrors = true;
-            } else if (adjustedAge < 10 || adjustedAge > 20) {
-                errors.dateOfBirth = "Participant must be between 10 and 20 years old";
-                hasErrors = true;
+                errors.dateOfBirth = "Invalid date";
+                detailedErrors.push("Correct the participant's date of birth to a valid date");
             }
         }
 
-        // Age: Must be selected, must match DOB
         if (!participantFormData.age) {
-            errors.age = "Please select an option";
-            missingFields.push("Participant Age");
-            hasErrors = true;
-        } else {
-            const dob = new Date(participantFormData.dateOfBirth);
-            const today = new Date();
-            const age = today.getFullYear() - dob.getFullYear();
-            const monthDiff = today.getMonth() - dob.getMonth();
-            const dayDiff = today.getDate() - dob.getDate();
-            const adjustedAge = monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
-
-            if (!isNaN(dob.getTime()) && parseInt(participantFormData.age) !== adjustedAge) {
-                errors.age = "Age does not match Date of Birth";
-                hasErrors = true;
-            }
+            errors.age = "Age is required";
+            detailedErrors.push("Select the participant's age");
+        } else if (!/^\d+$/.test(participantFormData.age) || parseInt(participantFormData.age) < 10 || parseInt(participantFormData.age) > 20) {
+            errors.age = "Age must be between 10 and 20";
+            detailedErrors.push("Correct the participant's age to be between 10 and 20");
         }
 
-        // Gender: Must be selected
-        if (!participantFormData.gender) {
-            errors.gender = "Please select a gender";
-            missingFields.push("Participant Gender");
-            hasErrors = true;
-        }
-
-        // Address: Must not be empty
         if (!participantFormData.address) {
-            errors.address = "This field cannot be empty";
-            missingFields.push("Participant Address");
-            hasErrors = true;
+            errors.address = "Address is required";
+            detailedErrors.push("Enter the participant's address");
         }
 
-        // City: Must not be empty, alphabets only
         if (!participantFormData.city) {
-            errors.city = "This field cannot be empty";
-            missingFields.push("Participant City");
-            hasErrors = true;
+            errors.city = "City is required";
+            detailedErrors.push("Enter the participant's city");
         } else if (!/^[a-zA-Z\s]+$/.test(participantFormData.city)) {
-            errors.city = "Enter a valid city (only alphabets allowed)";
-            hasErrors = true;
+            errors.city = "Only alphabets and spaces allowed";
+            detailedErrors.push("Correct the participant's city to use only alphabets and spaces");
         }
 
-        // State: Must not be empty, alphabets only
         if (!participantFormData.state) {
-            errors.state = "This field cannot be empty";
-            missingFields.push("Participant State");
-            hasErrors = true;
+            errors.state = "State is required";
+            detailedErrors.push("Enter the participant's state");
         } else if (!/^[a-zA-Z\s]+$/.test(participantFormData.state)) {
-            errors.state = "Enter a valid state (only alphabets allowed)";
-            hasErrors = true;
+            errors.state = "Only alphabets and spaces allowed";
+            detailedErrors.push("Correct the participant's state to use only alphabets and spaces");
         }
 
-        // Zip Code: Must be exactly 6 digits
         if (!participantFormData.zipCode) {
-            errors.zipCode = "Enter a valid zip code (6 digits)";
-            missingFields.push("Participant Zip Code");
-            hasErrors = true;
+            errors.zipCode = "Zip Code is required";
+            detailedErrors.push("Enter the participant's zip code");
         } else if (!/^\d{6}$/.test(participantFormData.zipCode)) {
-            errors.zipCode = "Enter a valid zip code (6 digits)";
-            hasErrors = true;
+            errors.zipCode = "Must be exactly 6 digits";
+            detailedErrors.push("Correct the participant's zip code to exactly 6 digits");
         }
 
-        // T-shirt Size: Must be selected
-        if (!participantFormData.tshirtSize) {
-            errors.tshirtSize = "Please select a t-shirt size";
-            missingFields.push("Participant T-shirt Size");
-            hasErrors = true;
-        }
-
-        setParticipantErrors(errors);
-        return { isValid: !hasErrors, missingFields };
+        return { errors, detailedErrors };
     };
 
     const validateParentForm = () => {
         const errors = {};
-        const missingFields = [];
-        let hasErrors = false;
+        const detailedErrors = [];
 
-        // Name: Must be alphabets and spaces only, not empty
         if (!parentFormData.name) {
-            errors.name = "Enter a valid name (only alphabets allowed)";
-            missingFields.push("Parent Name");
-            hasErrors = true;
+            errors.name = "Name is required";
+            detailedErrors.push("Enter the parent's name");
         } else if (!/^[a-zA-Z\s]+$/.test(parentFormData.name)) {
-            errors.name = "Enter a valid name (only alphabets allowed)";
-            hasErrors = true;
+            errors.name = "Only alphabets and spaces allowed";
+            detailedErrors.push("Correct the parent's name to use only alphabets and spaces");
         }
 
-        // Relationship: Must be selected
-        if (!parentFormData.relationship || parentFormData.relationship === "") {
-            errors.relationship = "Please select a relationship";
-            missingFields.push("Parent Relationship");
-            hasErrors = true;
-        }
-
-        // Email: Must be a valid email format
         if (!parentFormData.email) {
-            errors.email = "This field cannot be empty";
-            missingFields.push("Parent Email");
-            hasErrors = true;
+            errors.email = "Email is required";
+            detailedErrors.push("Enter the parent's email");
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parentFormData.email)) {
-            errors.email = "Enter a valid email address (e.g., user@domain.com)";
-            hasErrors = true;
+            errors.email = "Invalid email format";
+            detailedErrors.push("Correct the parent's email to a valid format");
         }
 
-        // Phone Number: Must be exactly 10 digits
         if (!parentFormData.phoneNumber) {
-            errors.phoneNumber = "This field cannot be empty";
-            missingFields.push("Parent Mobile");
-            hasErrors = true;
+            errors.phoneNumber = "Phone Number is required";
+            detailedErrors.push("Enter the parent's phone number");
         } else if (!/^\d{10}$/.test(parentFormData.phoneNumber)) {
-            errors.phoneNumber = "Enter a valid phone number (10 digits, e.g., 9876543210)";
-            hasErrors = true;
+            errors.phoneNumber = "Must be exactly 10 digits";
+            detailedErrors.push("Correct the parent's phone number to exactly 10 digits");
         }
 
-        setParentErrors(errors);
-        return { isValid: !hasErrors, missingFields };
+        if (!parentFormData.relationship) {
+            errors.relationship = "Relationship is required";
+            detailedErrors.push("Select the parent's relationship");
+        } else if (!["Father", "Mother", "Guardian"].includes(parentFormData.relationship)) {
+            errors.relationship = "Invalid relationship selected";
+            detailedErrors.push("Correct the parent's relationship to Father, Mother, or Guardian");
+        }
+
+        return { errors, detailedErrors };
     };
 
     const validateLocationForm = () => {
         const errors = {};
-        const missingFields = [];
-        let hasErrors = false;
+        const detailedErrors = [];
 
-        // Batch: Must be selected
-        if (!locationFormData.batch) {
-            errors.batch = "Please select a batch";
-            missingFields.push("Preferred Batch");
-            hasErrors = true;
-        }
-
-        // Location: Must be set (derived from batch, but ensure it's not empty)
-        if (!locationFormData.location) {
-            errors.location = "Location cannot be empty";
-            missingFields.push("Preferred Location");
-            hasErrors = true;
-        }
-
-        // Timing: Must be selected
         if (!locationFormData.timing) {
-            errors.timing = "Please select a timing";
-            missingFields.push("Preferred Location & Timings");
-            hasErrors = true;
+            errors.timing = "Timing is required";
+            detailedErrors.push("Select a preferred timing for the location");
         }
 
-        setLocationErrors(errors);
-        return { isValid: !hasErrors, missingFields };
+        return { errors, detailedErrors };
     };
 
     const validateMedicalForm = () => {
         const errors = {};
-        const missingFields = [];
-        let hasErrors = false;
+        const detailedErrors = [];
 
-        // Medical Details: Required if hasMedicalCondition is true
         if (medicalFormData.hasMedicalCondition && !medicalFormData.medicalDetails) {
-            errors.medicalDetails = "Please provide details of the medical condition";
-            missingFields.push("Participant Medical Condition");
-            hasErrors = true;
+            errors.medicalDetails = "Details are required";
+            detailedErrors.push("Enter medical details since a condition is indicated");
         } else if (medicalFormData.hasMedicalCondition && medicalFormData.medicalDetails.length < 10) {
-            errors.medicalDetails = "Medical details must be at least 10 characters long";
-            hasErrors = true;
+            errors.medicalDetails = "Must be at least 10 characters";
+            detailedErrors.push("Correct the medical details to at least 10 characters");
         }
 
-        setMedicalErrors(errors);
-        return { isValid: !hasErrors, missingFields };
+        return { errors, detailedErrors };
     };
 
+    // Handle form data changes without real-time error updates until submission
     const handleParticipantFormDataChange = useCallback((data) => {
         setParticipantFormData(data);
-    }, []);
+        if (hasSubmitted) {
+            const { errors } = validateParticipantForm();
+            setParticipantErrors(errors);
+        }
+    }, [hasSubmitted]);
 
     const handleParentFormDataChange = useCallback((data) => {
         setParentFormData(data);
-    }, []);
+        if (hasSubmitted) {
+            const { errors } = validateParentForm();
+            setParentErrors(errors);
+        }
+    }, [hasSubmitted]);
 
     const handleLocationFormDataChange = useCallback((data) => {
         setLocationFormData(data);
-    }, []);
+        if (hasSubmitted) {
+            const { errors } = validateLocationForm();
+            setLocationErrors(errors);
+        }
+    }, [hasSubmitted]);
 
     const handleMedicalFormDataChange = useCallback((data) => {
         setMedicalFormData(data);
-    }, []);
+        if (hasSubmitted) {
+            const { errors } = validateMedicalForm();
+            setMedicalErrors(errors);
+        }
+    }, [hasSubmitted]);
 
     const handleCheckboxChange = () => {
-        setFormData((prev) => ({
-            ...prev,
-            agreed: !prev.agreed,
-        }));
-        setFormErrors([]); // Clear errors when checkbox state changes
+        setFormData((prev) => ({ ...prev, agreed: !prev.agreed }));
+        setFormErrors([]);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
-        setFormErrors([]); // Clear previous errors
+        setFormErrors([]);
+        setIsSubmitting(true);
+        setHasSubmitted(true); // Mark form as submitted
 
         if (!formData.agreed) {
-            setFormErrors(["Terms & Conditions"]);
+            setFormErrors(["You must accept the terms and conditions"]);
+            setIsSubmitting(false);
             return;
         }
 
@@ -324,15 +239,22 @@ const Fitness = () => {
         const locationValidation = validateLocationForm();
         const medicalValidation = validateMedicalForm();
 
-        const allMissingFields = [
-            ...participantValidation.missingFields,
-            ...parentValidation.missingFields,
-            ...locationValidation.missingFields,
-            ...medicalValidation.missingFields,
+        // Set errors for each section after submission
+        setParticipantErrors(participantValidation.errors);
+        setParentErrors(parentValidation.errors);
+        setLocationErrors(locationValidation.errors);
+        setMedicalErrors(medicalValidation.errors);
+
+        const allDetailedErrors = [
+            ...participantValidation.detailedErrors,
+            ...parentValidation.detailedErrors,
+            ...locationValidation.detailedErrors,
+            ...medicalValidation.detailedErrors,
         ];
 
-        if (allMissingFields.length > 0) {
-            setFormErrors(allMissingFields);
+        if (allDetailedErrors.length > 0) {
+            setFormErrors(allDetailedErrors);
+            setIsSubmitting(false);
             return;
         }
 
@@ -343,110 +265,95 @@ const Fitness = () => {
             medicalInfo: medicalFormData,
             declaration: formData,
         };
-        console.log("Fitness All Form Data:", JSON.stringify(allData, null, 2));
+
+        // Simulate API call
+        setTimeout(() => {
+            console.log("Fitness All Form Data:", JSON.stringify(allData, null, 2));
+            setIsSubmitting(false);
+        }, 2000);
     };
+
     return (
         <div className="">
             <Banner />
-
             <ParentHeader />
-
             <div ref={participantFormRef}>
-                <ParticipantForm
-                    onFormDataChange={handleParticipantFormDataChange}
-                    errors={participantErrors}
-                />
+                <ParticipantForm onFormDataChange={handleParticipantFormDataChange} errors={hasSubmitted ? participantErrors : {}} />
             </div>
-
             <div ref={parentFormRef}>
-                <ParentDetails
-                    onFormDataChange={handleParentFormDataChange}
-                    errors={parentErrors}
-                />
+                <ParentDetails onFormDataChange={handleParentFormDataChange} errors={hasSubmitted ? parentErrors : {}} />
             </div>
-
             <div ref={locationFormRef}>
-                <SelectLocation
-                    onFormDataChange={handleLocationFormDataChange}
-                    errors={locationErrors}
-                />
+                <SelectLocation onFormDataChange={handleLocationFormDataChange} errors={hasSubmitted ? locationErrors : {}} />
             </div>
-
             <div ref={medicalFormRef}>
-                <MedicalInfo
-                    onFormDataChange={handleMedicalFormDataChange}
-                    errors={medicalErrors}
-                />
+                <MedicalInfo onFormDataChange={handleMedicalFormDataChange} errors={hasSubmitted ? medicalErrors : {}} />
             </div>
-
             <div className="bg-[#161616] py-8 md:pt-24">
                 <div className="max-w-[1099px] w-[76%] mx-auto md:h-[712px]">
-                    <h2 className="text-[#B6E82A] heebo_500_45_32 uppercase text-center">
-                        Declaration Form
-                    </h2>
+                    <h2 className="text-[#B6E82A] heebo_500_45_32 uppercase text-center">Declaration Form</h2>
                     <form onSubmit={handleSubmit} className="mt-6 sm:mt-8 md:mt-20">
                         <ul className="list-disc pl-5 space-y-2 sm:space-y-5 text-white heebo_400_20_40">
                             <li>My child is physically fit and capable of participating in all activities at the FitGen Summer Camp 2025.</li>
                             <li>I understand and acknowledge the inherent risks involved in physical activities and sports.</li>
-                            <li>
-                                I authorise the FitGen Sports Academy and its staff to provide first aid and, if necessary, seek medical attention in case of an emergency.
-                            </li>
-                            <li>
-                                I will not hold FitGen Sports Academy, its coaches, or organisers responsible for any injuries or accidents that may occur during the camp.
-                            </li>
-                            <li>
-                                I authorise the use of my child’s photographs and videos taken during the camp for promotional and marketing purposes.
-                            </li>
+                            <li>I authorise the FitGen Sports Academy and its staff to provide first aid and, if necessary, seek medical attention in case of an emergency.</li>
+                            <li>I will not hold FitGen Sports Academy, its coaches, or organisers responsible for any injuries or accidents that may occur during the camp.</li>
+                            <li>I authorise the use of my child’s photographs and videos taken during the camp for promotional and marketing purposes.</li>
                         </ul>
-                        <div className="flex items-start md:items-center gap-2 mt-4 sm:mt-10">
-                            <label className="relative flex items-center cursor-pointer">
+                        <div className="flex items-start md:items- gap-2 mt-4 sm:mt-10">
+                            <label className="relative flex items-center cursor-pointer mt-1">
                                 <input
                                     type="checkbox"
                                     checked={formData.agreed}
                                     onChange={handleCheckboxChange}
                                     className="opacity-0 absolute w-[18px] h-[18px] declaration"
                                 />
-                                <span className="w-[18px] h-[18px] border border-[#B6E82A] bg-[#161616] flex items-center justify-center">
+                                <span className="w-[18px] h-[18px] border border-[#B6E82A] flex items-center justify-center">
                                     {formData.agreed && (
-                                        <svg
-                                            className="w-[18px] h-[18px] bg-[#B6E82A] text-[#4E008E]"
-                                            fill="full"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="2"
-                                                d="M5 13l4 4L19 7"
-                                            />
+                                        <svg className="w-[18px] h-[18px] bg-[#B6E82A] text-[#4E008E]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                                         </svg>
                                     )}
                                 </span>
                             </label>
-                            <span className="text-white heebo_500_20_29">
-                                I have read and understood the above terms and hereby agree to abide by them.
-                            </span>
+                            <span className="text-white heebo_500_20_29">I have read and understood the above terms and hereby agree to abide by them.</span>
                         </div>
                         {formErrors.length > 0 && (
-                            <p className="text-red-500 text-md mt-2">
-                                {formData.agreed ? <span className="font-bold">Missing fields: </span> : "You must accept the terms and conditions"}
-                                {formData.agreed && formErrors.join(", ")}
-                            </p>
+                            <div className="mt-2">
+                                {!formData.agreed ? (
+                                    <p className="text-red-500 text-md">
+                                        You must accept the terms and conditions
+                                    </p>
+                                ) : (
+                                    <p className="text-red-500 text-md">
+                                        <span className="font-bold">Please fix: </span>
+                                        {formErrors.join(", ")}
+                                    </p>
+                                )}
+                            </div>
                         )}
                         <div className="w-full flex justify-start mt-8 sm:mt-10 md:mt-20">
                             <button
                                 type="submit"
-                                className="h-[47.19px] w-[205.69px] bg-[#B6E82A] text-[#4E008E] heebo_400_16_11 uppercase"
+                                disabled={isSubmitting}
+                                className={`h-[47.19px] w-[205.69px] bg-[#B6E82A] text-[#4E008E] heebo_400_16_11 uppercase flex items-center justify-center ${isSubmitting ? "opacity-75" : ""}`}
                             >
-                                Submit
+                                {isSubmitting ? (
+                                    <span className="flex items-center">
+                                        <svg className="animate-spin h-5 w-5 mr-2 text-[#4E008E]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h-8z"></path>
+                                        </svg>
+                                        Submitting...
+                                    </span>
+                                ) : (
+                                    "Submit"
+                                )}
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
-
             <Footer />
         </div>
     );
