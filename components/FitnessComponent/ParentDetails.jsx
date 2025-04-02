@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const ParentDetails = ({ onFormDataChange, errors = {} }) => {
+const ParentDetails = ({ onFormDataChange, errors = {}, resetForm = false }) => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -14,6 +14,19 @@ const ParentDetails = ({ onFormDataChange, errors = {} }) => {
     useEffect(() => {
         onFormDataChange(formData);
     }, [formData, onFormDataChange]);
+
+    useEffect(() => {
+        if (resetForm) {
+            setFormData({
+                name: "",
+                email: "",
+                relationship: "Father",
+                phoneNumber: "",
+            });
+            setLocalErrors({});
+            setTouched({});
+        }
+    }, [resetForm]);
 
     // Validation function for individual fields
     const validateField = (name, value) => {

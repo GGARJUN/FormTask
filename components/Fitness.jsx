@@ -6,12 +6,13 @@ import MedicalInfo from './FitnessComponent/MedicalInfo';
 import Banner from './FitnessComponent/Banner';
 import ParentHeader from "./FitnessComponent/ParentHeader";
 import Footer from "./FitnessComponent/Footer";
-import SelectLocation from "./FitnessComponent/SelectLocation"; // Fixed typo
+import SelectLocation from "./FitnessComponent/SelectLocation";
 
 const Fitness = () => {
     const [formData, setFormData] = useState({ agreed: false });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [hasSubmitted, setHasSubmitted] = useState(false);
+    const [resetForm, setResetForm] = useState(false);
 
     const [participantFormData, setParticipantFormData] = useState({
         name: "",
@@ -47,7 +48,7 @@ const Fitness = () => {
     const [parentErrors, setParentErrors] = useState({});
     const [locationErrors, setLocationErrors] = useState({});
     const [medicalErrors, setMedicalErrors] = useState({});
-    const [formErrors, setFormErrors] = useState([]); // Now stores detailed error messages
+    const [formErrors, setFormErrors] = useState([]);
 
     const participantFormRef = useRef(null);
     const parentFormRef = useRef(null);
@@ -184,7 +185,6 @@ const Fitness = () => {
         return { errors, detailedErrors };
     };
 
-    // Handle form data changes without real-time error updates until submission
     const handleParticipantFormDataChange = useCallback((data) => {
         setParticipantFormData(data);
         if (hasSubmitted) {
@@ -226,7 +226,7 @@ const Fitness = () => {
         e.preventDefault();
         setFormErrors([]);
         setIsSubmitting(true);
-        setHasSubmitted(true); // Mark form as submitted
+        setHasSubmitted(true);
 
         if (!formData.agreed) {
             setFormErrors(["You must accept the terms and conditions"]);
@@ -239,7 +239,6 @@ const Fitness = () => {
         const locationValidation = validateLocationForm();
         const medicalValidation = validateMedicalForm();
 
-        // Set errors for each section after submission
         setParticipantErrors(participantValidation.errors);
         setParentErrors(parentValidation.errors);
         setLocationErrors(locationValidation.errors);
@@ -266,9 +265,49 @@ const Fitness = () => {
             declaration: formData,
         };
 
-        // Simulate API call
         setTimeout(() => {
             console.log("Fitness All Form Data:", JSON.stringify(allData, null, 2));
+            
+            // Reset all form data to initial states
+            setParticipantFormData({
+                name: "",
+                age: "",
+                gender: "Male",
+                dateOfBirth: "",
+                address: "",
+                city: "",
+                state: "",
+                zipCode: "",
+                tshirtSize: "XS",
+            });
+            setParentFormData({
+                name: "",
+                email: "",
+                relationship: "Father",
+                phoneNumber: "",
+            });
+            setLocationFormData({
+                batch: "First Batch: April 1st - April 18th",
+                location: "Santhome HSS",
+                timing: "",
+            });
+            setMedicalFormData({
+                hasMedicalCondition: false,
+                medicalDetails: "",
+            });
+            setFormData({ agreed: false });
+
+            // Clear errors and submission states
+            setParticipantErrors({});
+            setParentErrors({});
+            setLocationErrors({});
+            setMedicalErrors({});
+            setFormErrors([]);
+            setHasSubmitted(false);
+
+            // Trigger reset in child components
+            setResetForm(true);
+            setTimeout(() => setResetForm(false), 100); // Increased delay to ensure reset propagates
             setIsSubmitting(false);
         }, 2000);
     };
@@ -278,16 +317,16 @@ const Fitness = () => {
             <Banner />
             <ParentHeader />
             <div ref={participantFormRef}>
-                <ParticipantForm onFormDataChange={handleParticipantFormDataChange} errors={hasSubmitted ? participantErrors : {}} />
+                <ParticipantForm onFormDataChange={handleParticipantFormDataChange} errors={hasSubmitted ? participantErrors : {}} resetForm={resetForm} />
             </div>
             <div ref={parentFormRef}>
-                <ParentDetails onFormDataChange={handleParentFormDataChange} errors={hasSubmitted ? parentErrors : {}} />
+                <ParentDetails onFormDataChange={handleParentFormDataChange} errors={hasSubmitted ? parentErrors : {}} resetForm={resetForm} />
             </div>
             <div ref={locationFormRef}>
-                <SelectLocation onFormDataChange={handleLocationFormDataChange} errors={hasSubmitted ? locationErrors : {}} />
+                <SelectLocation onFormDataChange={handleLocationFormDataChange} errors={hasSubmitted ? locationErrors : {}} resetForm={resetForm} />
             </div>
             <div ref={medicalFormRef}>
-                <MedicalInfo onFormDataChange={handleMedicalFormDataChange} errors={hasSubmitted ? medicalErrors : {}} />
+                <MedicalInfo onFormDataChange={handleMedicalFormDataChange} errors={hasSubmitted ? medicalErrors : {}} resetForm={resetForm} />
             </div>
             <div className="bg-[#161616] py-8 md:pt-24">
                 <div className="max-w-[1099px] w-[76%] mx-auto md:h-[712px]">

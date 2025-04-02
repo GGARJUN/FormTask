@@ -1,17 +1,29 @@
 import React, { useState, useEffect } from "react";
 
-const MedicalInfo = ({ onFormDataChange, errors = {} }) => {
+const MedicalInfo = ({ onFormDataChange, errors = {}, resetForm = false }) => {
     const [formData, setFormData] = useState({
         hasMedicalCondition: false,
         medicalDetails: "",
     });
 
-    const [localErrors, setLocalErrors] = useState({}); // Local state for real-time errors
-    const [touched, setTouched] = useState({ medicalDetails: false }); // Track if textarea has been interacted with
+    const [localErrors, setLocalErrors] = useState({});
+    const [touched, setTouched] = useState({ medicalDetails: false });
 
     useEffect(() => {
         onFormDataChange(formData);
     }, [formData, onFormDataChange]);
+
+    // Reset form when resetForm prop changes to true
+    useEffect(() => {
+        if (resetForm) {
+            setFormData({
+                hasMedicalCondition: false,
+                medicalDetails: "",
+            });
+            setLocalErrors({});
+            setTouched({ medicalDetails: false });
+        }
+    }, [resetForm]);
 
     // Validation function for medicalDetails
     const validateMedicalDetails = (hasCondition, details) => {
@@ -28,7 +40,6 @@ const MedicalInfo = ({ onFormDataChange, errors = {} }) => {
             medicalDetails: value ? prev.medicalDetails : "",
         }));
 
-        // Validate when checkbox changes to "YES" and reset if "NO"
         const fieldErrors = validateMedicalDetails(value, formData.medicalDetails);
         setLocalErrors((prev) => ({
             ...prev,
@@ -43,13 +54,11 @@ const MedicalInfo = ({ onFormDataChange, errors = {} }) => {
             medicalDetails: value,
         }));
 
-        // Mark textarea as touched
         setTouched((prev) => ({
             ...prev,
             medicalDetails: true,
         }));
 
-        // Validate textarea and update local errors
         const fieldErrors = validateMedicalDetails(formData.hasMedicalCondition, value);
         setLocalErrors((prev) => ({
             ...prev,
@@ -57,7 +66,6 @@ const MedicalInfo = ({ onFormDataChange, errors = {} }) => {
         }));
     };
 
-    // Display errors only for touched fields or if parent errors are present
     const displayedErrors = {
         medicalDetails: touched.medicalDetails ? localErrors.medicalDetails : errors.medicalDetails,
     };

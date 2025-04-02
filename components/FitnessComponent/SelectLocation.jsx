@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const SelectLocation = ({ onFormDataChange, errors = {} }) => {
+const SelectLocation = ({ onFormDataChange, errors = {}, resetForm = false }) => {
     const [formData, setFormData] = useState({
         batch: "First Batch: April 1st - April 18th",
         location: "Santhome HSS",
@@ -13,6 +13,18 @@ const SelectLocation = ({ onFormDataChange, errors = {} }) => {
     useEffect(() => {
         onFormDataChange(formData);
     }, [formData, onFormDataChange]);
+
+    useEffect(() => {
+        if (resetForm) {
+            setFormData({
+                batch: "First Batch: April 1st - April 18th",
+                location: "Santhome HSS",
+                timing: "",
+            });
+            setLocalErrors({});
+            setTouched({ timing: false });
+        }
+    }, [resetForm]);
 
     // Validation function for the timing field
     const validateTiming = (timing) => {

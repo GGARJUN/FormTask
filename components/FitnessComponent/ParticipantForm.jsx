@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function ParticipantForm({ onFormDataChange, errors }) {
+export default function ParticipantForm({ onFormDataChange, errors, resetForm = false }) {
     const [formData, setFormData] = useState({
         name: "",
         dateOfBirth: "",
@@ -19,6 +19,25 @@ export default function ParticipantForm({ onFormDataChange, errors }) {
     useEffect(() => {
         onFormDataChange(formData);
     }, [formData, onFormDataChange]);
+
+
+    useEffect(() => {
+        if (resetForm) {
+            setFormData({
+                name: "",
+                age: "",
+                gender: "Male",
+                dateOfBirth: "",
+                address: "",
+                city: "",
+                state: "",
+                zipCode: "",
+                tshirtSize: "XS",
+            });
+            setLocalErrors({});
+            setTouched({});
+        }
+    }, [resetForm]);
 
     // Validation function for individual fields
     const validateField = (name, value) => {
