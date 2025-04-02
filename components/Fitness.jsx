@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useCallback, useRef } from "react";
 import ParticipantForm from './FitnessComponent/ParticipantForm';
 import ParentDetails from './FitnessComponent/ParentDetails';
@@ -47,10 +47,12 @@ const Fitness = () => {
         name: "",
         dateOfBirth: "",
         age: "",
+        gender: "",
         address: "",
         city: "",
         state: "",
         zipCode: "",
+        tshirtSize: "",
     });
 
     const [parentErrors, setParentErrors] = useState({
@@ -61,8 +63,9 @@ const Fitness = () => {
     });
 
     const [locationErrors, setLocationErrors] = useState({
-        timing: "",
         batch: "",
+        location: "",
+        timing: "",
     });
 
     const [medicalErrors, setMedicalErrors] = useState({
@@ -81,6 +84,7 @@ const Fitness = () => {
         const missingFields = [];
         let hasErrors = false;
 
+        // Name: Must be alphabets and spaces only, not empty
         if (!participantFormData.name) {
             errors.name = "Enter a valid name (only alphabets allowed)";
             missingFields.push("Participant Name");
@@ -90,42 +94,95 @@ const Fitness = () => {
             hasErrors = true;
         }
 
+        // Date of Birth: Must be a valid date, participant must be between 10 and 20 years old
         if (!participantFormData.dateOfBirth) {
             errors.dateOfBirth = "This field cannot be empty";
             missingFields.push("Participant Date of Birth");
             hasErrors = true;
+        } else {
+            const dob = new Date(participantFormData.dateOfBirth);
+            const today = new Date();
+            const age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+            const dayDiff = today.getDate() - dob.getDate();
+            const adjustedAge = monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
+
+            if (isNaN(dob.getTime())) {
+                errors.dateOfBirth = "Enter a valid date";
+                hasErrors = true;
+            } else if (adjustedAge < 10 || adjustedAge > 20) {
+                errors.dateOfBirth = "Participant must be between 10 and 20 years old";
+                hasErrors = true;
+            }
         }
 
+        // Age: Must be selected, must match DOB
         if (!participantFormData.age) {
             errors.age = "Please select an option";
             missingFields.push("Participant Age");
             hasErrors = true;
+        } else {
+            const dob = new Date(participantFormData.dateOfBirth);
+            const today = new Date();
+            const age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+            const dayDiff = today.getDate() - dob.getDate();
+            const adjustedAge = monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
+
+            if (!isNaN(dob.getTime()) && parseInt(participantFormData.age) !== adjustedAge) {
+                errors.age = "Age does not match Date of Birth";
+                hasErrors = true;
+            }
         }
 
+        // Gender: Must be selected
+        if (!participantFormData.gender) {
+            errors.gender = "Please select a gender";
+            missingFields.push("Participant Gender");
+            hasErrors = true;
+        }
+
+        // Address: Must not be empty
         if (!participantFormData.address) {
             errors.address = "This field cannot be empty";
             missingFields.push("Participant Address");
             hasErrors = true;
         }
 
+        // City: Must not be empty, alphabets only
         if (!participantFormData.city) {
             errors.city = "This field cannot be empty";
             missingFields.push("Participant City");
             hasErrors = true;
+        } else if (!/^[a-zA-Z\s]+$/.test(participantFormData.city)) {
+            errors.city = "Enter a valid city (only alphabets allowed)";
+            hasErrors = true;
         }
 
+        // State: Must not be empty, alphabets only
         if (!participantFormData.state) {
             errors.state = "This field cannot be empty";
             missingFields.push("Participant State");
             hasErrors = true;
+        } else if (!/^[a-zA-Z\s]+$/.test(participantFormData.state)) {
+            errors.state = "Enter a valid state (only alphabets allowed)";
+            hasErrors = true;
         }
 
+        // Zip Code: Must be exactly 6 digits
         if (!participantFormData.zipCode) {
-            errors.zipCode = "Enter a valid zip code (only numbers allowed)";
+            errors.zipCode = "Enter a valid zip code (6 digits)";
             missingFields.push("Participant Zip Code");
             hasErrors = true;
-        } else if (!/^\d+$/.test(participantFormData.zipCode)) {
-            errors.zipCode = "Enter a valid zip code (only numbers allowed)";
+        } else if (!/^\d{6}$/.test(participantFormData.zipCode)) {
+            errors.zipCode = "Enter a valid zip code (6 digits)";
+            hasErrors = true;
+        }
+
+        // T-shirt Size: Must be selected
+        if (!participantFormData.tshirtSize) {
+            errors.tshirtSize = "Please select a t-shirt size";
+            missingFields.push("Participant T-shirt Size");
             hasErrors = true;
         }
 
@@ -138,8 +195,9 @@ const Fitness = () => {
         const missingFields = [];
         let hasErrors = false;
 
+        // Name: Must be alphabets and spaces only, not empty
         if (!parentFormData.name) {
-            errors.name = "This field cannot be empty";
+            errors.name = "Enter a valid name (only alphabets allowed)";
             missingFields.push("Parent Name");
             hasErrors = true;
         } else if (!/^[a-zA-Z\s]+$/.test(parentFormData.name)) {
@@ -147,27 +205,30 @@ const Fitness = () => {
             hasErrors = true;
         }
 
+        // Relationship: Must be selected
         if (!parentFormData.relationship || parentFormData.relationship === "") {
             errors.relationship = "Please select a relationship";
             missingFields.push("Parent Relationship");
             hasErrors = true;
         }
 
+        // Email: Must be a valid email format
         if (!parentFormData.email) {
             errors.email = "This field cannot be empty";
             missingFields.push("Parent Email");
             hasErrors = true;
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parentFormData.email)) {
-            errors.email = "Enter a valid email address";
+            errors.email = "Enter a valid email address (e.g., user@domain.com)";
             hasErrors = true;
         }
 
+        // Phone Number: Must be exactly 10 digits
         if (!parentFormData.phoneNumber) {
             errors.phoneNumber = "This field cannot be empty";
             missingFields.push("Parent Mobile");
             hasErrors = true;
         } else if (!/^\d{10}$/.test(parentFormData.phoneNumber)) {
-            errors.phoneNumber = "Enter a valid phone number (format: 9876543210)";
+            errors.phoneNumber = "Enter a valid phone number (10 digits, e.g., 9876543210)";
             hasErrors = true;
         }
 
@@ -180,12 +241,21 @@ const Fitness = () => {
         const missingFields = [];
         let hasErrors = false;
 
+        // Batch: Must be selected
         if (!locationFormData.batch) {
             errors.batch = "Please select a batch";
             missingFields.push("Preferred Batch");
             hasErrors = true;
         }
 
+        // Location: Must be set (derived from batch, but ensure it's not empty)
+        if (!locationFormData.location) {
+            errors.location = "Location cannot be empty";
+            missingFields.push("Preferred Location");
+            hasErrors = true;
+        }
+
+        // Timing: Must be selected
         if (!locationFormData.timing) {
             errors.timing = "Please select a timing";
             missingFields.push("Preferred Location & Timings");
@@ -201,9 +271,13 @@ const Fitness = () => {
         const missingFields = [];
         let hasErrors = false;
 
+        // Medical Details: Required if hasMedicalCondition is true
         if (medicalFormData.hasMedicalCondition && !medicalFormData.medicalDetails) {
             errors.medicalDetails = "Please provide details of the medical condition";
             missingFields.push("Participant Medical Condition");
+            hasErrors = true;
+        } else if (medicalFormData.hasMedicalCondition && medicalFormData.medicalDetails.length < 10) {
+            errors.medicalDetails = "Medical details must be at least 10 characters long";
             hasErrors = true;
         }
 
@@ -269,9 +343,8 @@ const Fitness = () => {
             medicalInfo: medicalFormData,
             declaration: formData,
         };
-        console.log("Fitness All Form Data:", allData);
+        console.log("Fitness All Form Data:", JSON.stringify(allData, null, 2));
     };
-
     return (
         <div className="">
             <Banner />
